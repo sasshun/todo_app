@@ -1,11 +1,63 @@
-<h1>Tasks</h1>
-<div>
-  <% @tasks.each do |task| %>
-    <div style="display: flex;">
-        <div style="width: 200px;">Content: <%= task.content %></div>
-        <div><%= button_to "edit", edit_task_path(task), method: :get %></div>
-        <div><%= button_to "delete", task_path(task), method: :delete, data: { turbo_confirm: '削除しますか？' } %></div>
+<div class="row">
+  <div class="col-md-4">
+    <div>
+      <h2>タスク登録</h2>
+      <%= form_with model: @task, local: true do |f| %>
+        <div class="mb-3">
+          <%= f.text_area :content, class: "form-control", placeholder: "タスクを入力してください" %>
+        </div>
+        <div>
+          <%= f.submit "登録", class: "btn btn-primary" %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+
+    <div>
+      <h2>今日のタスク</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>タスク名</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tasks.each do |task| %>
+            <tr>
+              <td><%= task.content %></td>
+              <td>
+                <div class="d-flex">
+                  <%= button_to "開始", task_times_path(task_id: task.id), class: "btn btn-success me-2", method: :post %>
+                  <%= button_to "削除", task_path(task), class: "btn btn-danger", method: :delete, data: {turbo_confirm: "削除しますか？"} %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div>
+      <h2>タスク状況</h2>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>タスク名</th>
+            <th>時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @operating_tasks.each_with_index do |op_task, index| %>
+            <tr>
+              <td><%= op_task.content %></td>
+              <td><%= @operating_task_times[index].started_at.strftime("%H:%M:%S") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-<%= link_to "New task", new_task_path %>
